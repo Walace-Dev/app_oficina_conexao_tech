@@ -1,0 +1,15 @@
+{
+  "name": "app-oficina-conexao-tech",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
+    "lucide-react": "1.68.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": { "@vitejs/plugin-react": "6.2.1", "vite": "8.3.5" },
+  "engines": { "node": ">=22.12.0" }
+}
