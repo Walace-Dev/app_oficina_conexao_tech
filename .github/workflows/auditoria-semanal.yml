@@ -1,0 +1,75 @@
+name: Auditoria semanal - Conexão Tech
+
+on:
+  schedule:
+    # 09h nas segundas-feiras, fuso de Porto Velho/RO.
+    - cron: '0 9 * * 1'
+      timezone: 'America/Porto_Velho'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/auditoria-semanal.yml'
+      - 'scripts/weekly-healthcheck.mjs'
+      - 'src/**'
+      - 'supabase/schema.sql'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oficina-auditoria-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  auditar:
+    name: Build, integridade e disponibilidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PUBLIC_APP_URL: https://app-oficina-conexao-tech.vercel.app
+      PUBLIC_SUPABASE_URL: https://vmkjsgjledlmdxsqursi.supabase.co
+
+    steps:
+      - name: Obter repositório
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+
+      - name: Compilar aplicação React
+        id: build
+        run: npm run build
+
+      - name: Auditar estrutura e segurança do código
+        id: static
+        run: node scripts/weekly-healthcheck.mjs --static
+
+      - name: Verificar site e Supabase em produção
+        id: remote
+        run: node scripts/weekly-healthcheck.mjs --remote
+
+      - name: Resumo para auditoria
+        if: always()
+        env:
+          BUILD: ${{ steps.build.outcome }}
+          STATIC: ${{ steps.static.outcome }}
+          REMOTE: ${{ steps.remote.outcome }}
+        run: |
+          {
+            echo '## Auditoria da Oficina Conexão Tech'
+            echo
+            echo "- Compilação React: **$BUILD**"
+            echo "- Integridade da interface e do SQL: **$STATIC**"
+            echo "- Disponibilidade Vercel e gateway Supabase: **$REMOTE**"
+            echo
+            echo 'Se alguma verificação falhar, examine o log do passo correspondente.'
+            echo 'Os testes não leem, escrevem ou removem registros do banco.'
+          } >> "$GITHUB_STEP_SUMMARY"

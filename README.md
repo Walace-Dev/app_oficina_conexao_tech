@@ -56,3 +56,22 @@ Cadastre em **Production**, **Preview** e **Development**:
 - `src/styles.css`: identidade visual e responsividade
 - `supabase/schema.sql`: modelo do banco e políticas RLS
 - `AGENTS.md`: orientações para Codex/Claude Code
+
+## Auditoria automática semanal
+
+O GitHub Actions executa a auditoria **toda segunda-feira às 09h** (`America/Porto_Velho`).
+Ela também pode rodar manualmente em **Actions → Auditoria semanal - Conexão Tech → Run workflow** e após alterações na branch `main`.
+
+**O que é checado:**
+
+- Compilação do React com Vite (`npm run build`).
+- Integridade do input único, header, sidebar e footer.
+- Regras RLS no SQL versionado e ausência de chave privilegiada no frontend.
+- Resposta HTTP 200 do site na Vercel e disponibilidade do bundle JS.
+- Resposta do gateway REST do Supabase (sem realizar escrita ou leitura de nomes).
+
+Os resultados ficam nos [workflows do GitHub Actions](https://github.com/Walace-Dev/app_oficina_conexao_tech/actions/workflows/auditoria-semanal.yml), inclusive o resumo de cada execução. Falhas produzem status vermelho; notificações por e-mail dependem das preferências de notificação do GitHub.
+
+> **Limitação:** a checagem de RLS no GitHub é estática (código versionado). Para auditar as políticas efetivamente aplicadas no banco, consulte também o Security Advisor do Supabase. Como o frontend não possui backend próprio, logs de execução de funções Vercel não abrangem possíveis erros de JavaScript do navegador.
+
+> **Nota:** em repositórios públicos, o GitHub pode desabilitar tarefas agendadas após 60 dias sem atividade. Verifique a aba Actions nesse caso.
