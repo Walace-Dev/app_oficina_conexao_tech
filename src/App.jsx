@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   ArrowRight, Atom, CheckCircle2, Cloud, Code2, Database, ExternalLink,
-  Github, House, Info, LayoutPanelLeft, Menu, Send, ShieldCheck,
+  GitBranch, House, Info, LayoutPanelLeft, Menu, Send, ShieldCheck,
   Sparkles, UserRoundPlus, X
 } from 'lucide-react';
 import { supabase } from './lib/supabase.js';
@@ -158,7 +158,7 @@ export default function App() {
               </div>
             )}
             <div className="bottom-strip"><span>Feito para aprender, testar e evoluir.</span>
-              <a href="https://github.com/Walace-Dev/app_oficina_conexao_tech" target="_blank" rel="noopener noreferrer"><Github size={17} /> Ver repositório <ExternalLink size={14} /></a>
+              <a href="https://github.com/Walace-Dev/app_oficina_conexao_tech" target="_blank" rel="noopener noreferrer"><GitBranch size={17} /> Ver repositório <ExternalLink size={14} /></a>
             </div>
           </div>
         </main>
